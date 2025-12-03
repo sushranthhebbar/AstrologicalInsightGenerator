@@ -4,44 +4,45 @@ Build a service that takes a user's birth details (name, date, time, and locatio
 # Architecture
 ```mermaid
 flowchart TD
-    %% --- GLOBAL STYLING ---
-    %% 1. Replaced Black/Grey text/borders with Deep Navy Blue (#000080)
-    %% 2. Used highly saturated "Candy" colors for backgrounds
+    %% --- NEW BRIGHTER STYLING ---
+    %% Palette: Hot Pink, Electric Blue, Lime, Yellow, Orange, Violet
+    %% Stroke color changed from #333 (grey) to #2E004F (Deep Indigo) for color consistency
     
-    classDef client fill:#FF85C0,stroke:#000080,stroke-width: 2px,color:#000080;
-    classDef api fill:#40E0D0,stroke:#000080,stroke-width: 2px,color:#000080;
-    classDef logic fill:#7CFC00,stroke:#000080,stroke-width: 2px,color:#000080;
-    classDef storage fill:#FFD700,stroke:#000080,stroke-width: 2px,color:#000080;
-    classDef external fill:#FF7F50,stroke:#000080,stroke-width: 2px,color:#000080;
+    classDef client fill:#FF6EC7,stroke:#2E004F,stroke-width:2px,color:black;
+    classDef api fill:#4D96FF,stroke:#2E004F,stroke-width:2px,color:black;
+    classDef logic fill:#6BCB77,stroke:#2E004F,stroke-width:2px,color:black;
+    classDef storage fill:#FFD93D,stroke:#2E004F,stroke-width:2px,color:black;
+    classDef external fill:#FF9F43,stroke:#2E004F,stroke-width:2px,color:black;
+    classDef decision fill:#C780FA,stroke:#2E004F,stroke-width:2px,color:black;
+    classDef info fill:#00E0FF,stroke:#2E004F,stroke-width:2px,color:black;
+    
+    %% Subgraph Styling (Pastel backgrounds to replace white/grey)
+    style Core_Logic fill:#E8FFEA,stroke:#6BCB77,stroke-width:2px,color:black
+    style RAG_Personalization fill:#FFFBE6,stroke:#FFD93D,stroke-width:2px,color:black
+    style External_Services fill:#FFE5D9,stroke:#FF9F43,stroke-width:2px,color:black
+    %% ---------------------------
 
     %% Nodes
     User(["👤 User / Client"]):::client
     API["⚡ FastAPI Entrypoint /predict"]:::api
     
     subgraph Core_Logic [🧠 Core Logic Layer]
-        %% Subgraph styling (border)
-        style Core_Logic fill:#E0FFFF,stroke:#000080,stroke-width: 2px,color:#000080
-        
-        Validator{Input Valid?}:::logic
-        Cache{Check Cache}:::logic
+        Validator{Input Valid?}:::decision
+        Cache{Check Cache}:::decision
         Zodiac[Zodiac Engine]:::logic
         Prompt[Prompt Builder]:::logic
         Translator[Translator Service]:::logic
     end
 
     subgraph RAG_Personalization [🔍 Context & Retrieval]
-        style RAG_Personalization fill:#FFFACD,stroke:#000080,stroke-width: 2px,color:#000080
-        
-        VectorStore[("Vector Store / Knowledge Base")]:::storage
+        VectorStore[("Vector Store / KB")]:::storage
         UserProfile[("User Profile DB")]:::storage
         Retriever[Context Retriever]:::logic
     end
 
     subgraph External_Services [☁️ External Services]
-        style External_Services fill:#FFE4E1,stroke:#000080,stroke-width: 2px,color:#000080
-        
-        LLM["🤖 LLM (OpenAI/HuggingFace)"]:::external
-        Redis[("Redis/In-Memory Cache")]:::storage
+        LLM["🤖 LLM (OpenAI/HF)"]:::external
+        Redis[("Redis Cache")]:::storage
     end
 
     %% Flow
@@ -53,7 +54,7 @@ flowchart TD
     Cache -- Hit --> User
     Cache -- Miss --> Zodiac
     
-    Zodiac -->|Date/Time| Sign([Calculated Sign: Leo])
+    Zodiac -->|Date/Time| Sign([Calculated Sign: Leo]):::info
     
     %% Parallel Context Gathering
     Sign --> Retriever
@@ -71,8 +72,4 @@ flowchart TD
     Translator -->|Final Text| Redis
     Redis -->|Save| API
     API -->|JSON Response| User
-
-    %% --- LINK STYLING (To remove grey lines) ---
-    %% Applies Deep Navy Blue to all connecting lines
-    linkStyle default stroke:#000080,stroke-width: 2px,color:#000080;
 ```
