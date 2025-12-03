@@ -12,8 +12,8 @@ flowchart TD
     classDef external fill:#ddd,stroke:#333,stroke-width:2px;
 
     %% Nodes
-    User([👤 User / Client]):::client
-    API[⚡ FastAPI Entrypoint /predict]:::api
+    User(["👤 User / Client"]):::client
+    API["⚡ FastAPI Entrypoint /predict"]:::api
     
     subgraph Core_Logic [🧠 Core Logic Layer]
         Validator{Input Valid?}
@@ -24,14 +24,14 @@ flowchart TD
     end
 
     subgraph RAG_Personalization [🔍 Context & Retrieval]
-        VectorStore[(Vector Store / Knowledge Base)]:::storage
-        UserProfile[(User Profile DB)]:::storage
+        VectorStore[("Vector Store / Knowledge Base")]:::storage
+        UserProfile[("User Profile DB")]:::storage
         Retriever[Context Retriever]:::logic
     end
 
     subgraph External_Services [☁️ External Services]
-        LLM[🤖 LLM (OpenAI/HuggingFace)]:::external
-        Redis[(Redis/In-Memory Cache)]:::storage
+        LLM["🤖 LLM (OpenAI/HuggingFace)"]:::external
+        Redis[("Redis/In-Memory Cache")]:::storage
     end
 
     %% Flow
@@ -61,4 +61,4 @@ flowchart TD
     Translator -->|Final Text| Redis
     Redis -->|Save| API
     API -->|JSON Response| User
-    ```
+```
