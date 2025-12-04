@@ -1,0 +1,10 @@
+{
+  "Ritika": {
+    "preferences": ["career", "stress-management"],
+    "history": "anxious_about_work"
+  },
+  "Rahul": {
+    "preferences": ["relationships", "travel"],
+    "history": "planning_trip"
+  }
+}
