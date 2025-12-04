@@ -1,7 +1,7 @@
 # Astrological Insight Generator
 Build a service that takes a user's birth details (name, date, time, and location of birth) and returns a personalized daily astrological insight, using a combination of zodiac logic and LLM-based language generation.
 
-## ⚛️ Horoscope Generation Service Architecture
+## ⚛️ Architecture
 
 The system is structured as a pipeline with three major layers: **Interface**, **Intelligence (Core Logic & Context Retrieval)**, and **Generation**.
 
@@ -16,7 +16,7 @@ This layer handles the request lifecycle, input validation, and initial caching 
     * **Validator:** The first point of logic. It checks if the input data is valid.
         * **No:** Returns an **Error Response** to the client.
         * **Yes:** Proceeds to the cache check.
-    * **Cache Check (Redis Cache):** Immediately checks the high-speed **Redis Cache** (or an equivalent in-memory store) for a result for the exact same user/date combination.
+    * **Cache Check (Redis Cache):** Immediately checks the high-speed **Redis Cache** for a result.
         * **Cache Hit:** Directly returns the stored **JSON Response** to the User, bypassing the entire intelligence and generation pipeline.
         * **Cache Miss:** Proceeds to the Core Logic Layer.
 
@@ -30,7 +30,7 @@ This layer executes the necessary business logic to gather all inputs required f
 * **Zodiac Engine:** Takes the date from the input and calculates the precise **Astrological Sign** (e.g., **Leo**).
 
 #### B. Context & Retrieval (RAG)
-The calculated Sign is used to **parallelize** the retrieval of contextual data:
+The calculated Sign is used to retrieve the contextual data:
 * **Context Retriever:** Uses the calculated Sign (e.g., 'Leo') to query the **Vector Store / Knowledge Base (KB)**.
     * **Vector Store:** Returns relevant astrological context (e.g., specific **Planetary Alignment** rules) needed for the prediction.
 * **User Profile DB:** The Sign is also used to fetch **User Preferences** (e.g., "User prefers career advice," language setting) from the User Profile Database.
@@ -52,8 +52,6 @@ This final layer aggregates the context, generates the insight, and prepares the
     2.  The **API Entrypoint** receives the final result and sends the complete **JSON Response** back to the **User**.
 
 ***
-
-Would you like to explore the specific schema for the JSON request/response in the **Interface Layer**?
 
 ```mermaid
 flowchart TD
