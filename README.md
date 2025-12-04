@@ -16,9 +16,7 @@ Build a service that takes a user's birth details (name, date, time, and locatio
 
 ## 🎥 Demo
 
-*[Insert your demo video or GIF link here]*
-
-> **Tip:** You can record a screen capture of the `curl` request running in the terminal and the JSON response appearing.
+*[https://github.com/user-attachments/assets/b10c4a29-708a-41d4-90e8-10fdacefced6]*
 
 ## 🛠️ Installation & Setup
 
