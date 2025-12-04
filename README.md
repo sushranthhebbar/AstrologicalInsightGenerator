@@ -3,41 +3,57 @@ Build a service that takes a user's birth details (name, date, time, and locatio
 
 ## ⚛️ Horoscope Generation Service Architecture
 
-This document outlines the three primary layers of the **Horoscope Generation Service** architecture, detailing the function and technologies/components within each.
+The system is structured as a pipeline with three major layers: **Interface**, **Intelligence (Core Logic & Context Retrieval)**, and **Generation**.
 
 ---
 
-### 🌐 The Interface Layer (Blue)
+### 1. 🌐 The Interface Layer (FastAPI & Caching)
 
-This layer is responsible for handling all incoming **HTTP requests** and ensuring fast, standardized responses.
+This layer handles the request lifecycle, input validation, and initial caching strategy to ensure speed and reliability.
 
-* **FastAPI:** Serves as the web framework. It handles the initial request processing, **data validation** for inputs, and generating **standardized HTTP error responses**.
-* **Cache Strategy:** Implements an immediate check against a high-speed, **in-memory store** (such as **Redis** or a simple **Python dictionary**). This prevents unnecessary and costly calls to the LLM for identical requests (e.g., the same user requesting the horoscope for the same date).
-
----
-
-### 🧠 The Intelligence Layer (Green)
-
-The core business logic that determines the astrological sign and gathers the necessary context for the prediction.
-
-* **Zodiac Engine:** Contains the **pure Python logic** necessary to accurately determine the astrological sign based on the provided date of birth.
-* **Context Retriever (RAG):** Utilizes a **Retrieval-Augmented Generation (RAG)** pattern. It queries a mock **Vector Store** to find astrological rules and lore that are highly relevant to the calculated sign and current planetary positions (e.g., retrieving specific insights about **"Mars in Leo"**).
-* **Personalization:** Fetches and incorporates **user history** or explicit user settings to tailor the final prompt (e.g., noting that the **"User prefers career advice"** or has expressed interest in finance).
+* **User/Client:** Initiates the process by sending a **POST request** containing user data (like date of birth) to the API.
+* **FastAPI Entrypoint (`/predict`):** The primary entry point for the service.
+    * **Validator:** The first point of logic. It checks if the input data is valid.
+        * **No:** Returns an **Error Response** to the client.
+        * **Yes:** Proceeds to the cache check.
+    * **Cache Check (Redis Cache):** Immediately checks the high-speed **Redis Cache** (or an equivalent in-memory store) for a result for the exact same user/date combination.
+        * **Cache Hit:** Directly returns the stored **JSON Response** to the User, bypassing the entire intelligence and generation pipeline.
+        * **Cache Miss:** Proceeds to the Core Logic Layer.
 
 ---
 
-### ✨ The Generation Layer (Grey)
+### 2. 🧠 The Intelligence Layer (Core Logic & Context Retrieval)
 
-This layer is where the final, personalized horoscope insight is constructed and generated.
+This layer executes the necessary business logic to gather all inputs required for the LLM prompt.
 
-* **Prompt Builder:** Aggregates all the gathered components into a single, comprehensive instruction set:
-    * The determined **Zodiac Sign**.
-    * The **Retrieved Context** (astrological rules).
-    * The **User Preferences**.
-    This forms the final system instruction for the LLM.
-* **LLM & Translation:**
-    * The aggregated prompt is sent to the **Large Language Model (LLM)** to generate the horoscope insight.
-    * It applies **multilingual support** by translating the generated insight into the requested language if necessary (e.g., if the requested language is **Hindi**).
+#### A. Core Logic
+* **Zodiac Engine:** Takes the date from the input and calculates the precise **Astrological Sign** (e.g., **Leo**).
+
+#### B. Context & Retrieval (RAG)
+The calculated Sign is used to **parallelize** the retrieval of contextual data:
+* **Context Retriever:** Uses the calculated Sign (e.g., 'Leo') to query the **Vector Store / Knowledge Base (KB)**.
+    * **Vector Store:** Returns relevant astrological context (e.g., specific **Planetary Alignment** rules) needed for the prediction.
+* **User Profile DB:** The Sign is also used to fetch **User Preferences** (e.g., "User prefers career advice," language setting) from the User Profile Database.
+
+---
+
+### 3. ✨ The Generation Layer (Prompting & Output)
+
+This final layer aggregates the context, generates the insight, and prepares the final output, including translation and final caching.
+
+* **Prompt Builder:** Aggregates the three main components into a single, comprehensive **Complete Prompt**:
+    1.  Calculated **Sign**.
+    2.  Retrieved **Context** (Planetary Alignment).
+    3.  **User Preferences** (Personalization).
+* **LLM (Large Language Model):** Receives the Complete Prompt and generates the **Raw Insight** (the horoscope prediction text).
+* **Translator Service:** Receives the Raw Insight and applies **multilingual support**. If the user's preferred language (e.g., Hindi) is set, it translates the text into the **Final Text**.
+* **Final API Handling:**
+    1.  The **Final Text** is saved back into the **Redis Cache** to serve future identical requests (Cache Hit).
+    2.  The **API Entrypoint** receives the final result and sends the complete **JSON Response** back to the **User**.
+
+***
+
+Would you like to explore the specific schema for the JSON request/response in the **Interface Layer**?
 
 ```mermaid
 flowchart TD
