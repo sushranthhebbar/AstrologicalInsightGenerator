@@ -124,3 +124,119 @@ flowchart TD
     Redis -->|Save| API
     API -->|JSON Response| User
 ```
+
+
+## 🎥 Demo
+
+*[Insert your demo video or GIF link here]*
+
+> **Tip:** You can record a screen capture of the `curl` request running in the terminal and the JSON response appearing.
+
+## 🧐 Assumptions Made
+
+To ensure this assignment focuses on architecture and code quality without requiring external dependencies or API keys during evaluation, the following assumptions were made:
+
+1.  **Western Zodiac System**: The `ZodiacEngine` uses standard Western Sun Sign date ranges. Complex Vedic calculations (Ayanamsa, planetary degrees) or time-based Ascendant calculations are considered out of scope for this MVP.
+
+2.  **Mocked LLM & APIs**: The `LLMClient` and `TranslatorService` are currently stubbed (mocked). This ensures the code runs immediately for the evaluator without needing an OpenAI API Key.
+
+3.  **Simplified RAG**: The "Vector Store" is implemented as a lightweight JSON keyword search (`knowledge_base.json`) rather than using a heavy vector database like ChromaDB or Pinecone. This keeps the project zero-dependency.
+
+4.  **Data Persistence**: We assume a low-volume, single-instance environment, so "Databases" are represented by local JSON files and Caching is done in-memory.
+
+## 🚀 Features
+
+  * **Zodiac Inference**: Automatically calculates zodiac signs from birth dates.
+
+  * **Personalized Insights**: Uses a mock "User DB" to tailor advice based on user history (e.g., career vs. relationship focus).
+
+  * **RAG (Retrieval-Augmented Generation)**: Enriches prompts with specific planetary context from a knowledge base.
+
+  * **Multilingual Support**: capable of returning insights in Hindi (`hi`) or English (`en`).
+
+  * **Smart Caching**: Implements a caching layer to reduce LLM costs and latency.
+
+## 📂 Project Structure
+
+```text
+astro_pipeline/
+├── app/
+│   ├── api/            # API Endpoints & Dependency Injection
+│   ├── core/           # Business Logic (Zodiac Math, Prompt Engineering)
+│   ├── services/       # External Integrations (LLM, Cache, RAG)
+│   └── schemas/        # Pydantic Models for Validation
+├── data/               # Mock Databases (JSON)
+├── main.py             # Entry Point
+└── requirements.txt    # Dependencies
+```
+
+## 🛠️ Installation & Setup
+
+### 1\. Prerequisites
+
+  * Python 3.9+
+
+  * Virtual Environment (Recommended)
+
+### 2\. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3\. Run the Application
+
+```bash
+python main.py
+```
+
+*The server will start at `http://0.0.0.0:8000`*
+
+## ⚡ Usage
+
+### API Endpoint: `POST /predict`
+
+**Request Example (cURL):**
+
+```bash
+curl -X POST "http://localhost:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "name": "Ritika",
+           "birth_date": "1995-08-20",
+           "birth_time": "14:30",
+           "birth_place": "Jaipur, India",
+           "language": "en"
+         }'
+```
+
+**Response Example:**
+
+```json
+{
+  "zodiac": "Leo",
+  "insight": "Based on the alignment of the stars and your career focus, today is an excellent day to take bold risks.",
+  "language": "en",
+  "context_used": [
+    "The Sun is currently in a strong position, amplifying leadership qualities..."
+  ]
+}
+```
+
+### Interactive Documentation (Swagger UI)
+
+Visit `http://localhost:8000/docs` in your browser to test the API interactively.
+
+## 🧠 Design Choices
+
+1.  **FastAPI**: Chosen for its high performance (Starlette), native async support (critical for LLM/DB calls), and automatic validation (Pydantic).
+
+2.  **Service-Oriented**: The `ZodiacEngine` and `LLMClient` are decoupled. This allows us to swap the mock LLM for GPT-4 or the simple date logic for a complex `swisseph` library without breaking the API.
+
+3.  **Mocking Strategy**: To facilitate machine coding evaluation without needing live API keys, the Database, Vector Store, and Redis are implemented as robust file-based/memory-based mocks (`app/services/`).
+
+
+<!-- end list -->
+
+```
+```
