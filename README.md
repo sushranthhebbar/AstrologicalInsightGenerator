@@ -5,11 +5,11 @@ Build a service that takes a user's birth details (name, date, time, and locatio
 
   * **Zodiac Inference**: Automatically calculates zodiac signs from birth dates.
 
-  * **Personalized Insights**: Uses a mock "User DB" to tailor advice based on user history (e.g., career vs. relationship focus).
+  * **Personalized Insights**: Tailor's advice based on user history (e.g., career vs. relationship focus).
 
   * **RAG (Retrieval-Augmented Generation)**: Enriches prompts with specific planetary context from a knowledge base.
 
-  * **Multilingual Support**: capable of returning insights in Hindi (`hi`) or English (`en`).
+  * **Multilingual Support**: Capable of returning insights in Hindi (`hi`) or English (`en`).
 
   * **Smart Caching**: Implements a caching layer to reduce LLM costs and latency.
 
@@ -227,15 +227,6 @@ To ensure this assignment focuses on architecture and code quality without requi
 
 4.  **Data Persistence**: We assume a low-volume, single-instance environment, so "Databases" are represented by local JSON files and Caching is done in-memory.
 
-
-
-## 🧠 Design Choices
-
-1.  **FastAPI**: Chosen for its high performance (Starlette), native async support (critical for LLM/DB calls), and automatic validation (Pydantic).
-
-2.  **Service-Oriented**: The `ZodiacEngine` and `LLMClient` are decoupled. This allows us to swap the mock LLM for GPT-4 or the simple date logic for a complex `swisseph` library without breaking the API.
-
-3.  **Mocking Strategy**: To facilitate machine coding evaluation without needing live API keys, the Database, Vector Store, and Redis are implemented as robust file-based/memory-based mocks (`app/services/`).
-
+5. **Static User Profiles**: For the purpose of demonstrating personalization, user preferences are fetched from a static `user_profiles.json` file. In a production environment, this would be replaced by a dynamic User Management System and a persistent database.
 
 <!-- end list -->
